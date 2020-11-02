@@ -1,0 +1,318 @@
+
+---主键约束-----------PRI
+唯一确定一张表的一条元素
+给某个字段加约束 -》 字段不能重复 不能为空
+
+create table user1(
+id int primary key,
+name varchar(20)
+);
+
+
+create table user(
+id int primary key,//这个后面的primary key 就是约束的条件 要求表中的数据不能有重复的key
+name VARCHAR(20)
+);
+
+
+insert into user1 values
+	
+	
+#1.联合主键
+联合的主键加起来不重复就可以 
+联合主键任何一个字段都不可位空
+create table user2(
+	id int,
+	name varchar(20),
+	password varchar(20),
+	primary key (id,name)
+);
+
+
+
+#2.自增约束
+#auto_increment
+create table user3(
+	id int primary key auto_increment,
+	name varchar(20)
+);
+
+CREATE TABLE tb_student2 (
+id INT NOT NULL AUTO_INCREMENT,
+name VARCHAR(20) NOT NULL,
+PRIMARY KEY(ID)
+)AUTO_INCREMENT=100;
+
+CREATE TABLE user3(
+id INT PRIMARY KEY AUTO_INCREMENT,
+name VARCHAR(20)
+);
+
+INSERT INTO user3(name) VALUES('张三');
+INSERT INTO user3(name) VALUES('李四');
+
+
+INSERT INTO tb_student2(name) VALUES('张三');
+INSERT INTO tb_student2(name) VALUES('李四');
+
+select * from tb_student2;
++-----+--------+
+| id  | name   |
++-----+--------+
+| 100 | 张三   |
+| 101 | 张三   |
+| 102 | 张三   |
+| 103 | 李四   |
++-----+--------+
+
+
+desc user3;
++-------+-------------+------+-----+---------+----------------+
+| Field | Type        | Null | Key | Default | Extra          |
++-------+-------------+------+-----+---------+----------------+
+| id    | int         | NO   | PRI | NULL    | auto_increment |
+| name  | varchar(20) | YES  |     | NULL    |                |
++-------+-------------+------+-----+---------+----------------+
+
+#2.添加。删除 修改
+alter table user4 add primary key(id);//添加
+alter table user4 drop primary key;//删除
+alter table user4 modify id int primary key;//修改
+
+
+---唯一约束------UNI
+修饰字段的值不可重复
+
+create table user4(
+id int,
+name varchar(20)
+);
+
+
+alter table user4 add unique(name);
+
+
+desc user4;
++-------+-------------+------+-----+---------+-------+
+| Field | Type        | Null | Key | Default | Extra |
++-------+-------------+------+-----+---------+-------+
+| id    | int         | YES  |     | NULL    |       |
+| name  | varchar(20) | YES  | UNI | NULL    |       |
++-------+-------------+------+-----+---------+-------+
+
+insert into user4 values(1,'qqq');
+insert into user4 values(1,'qqq');
+insert into user4 values(1,'www');
+
+
+
+create table user67(
+id int,
+name varchar(20),
+age int,
+unique(age,name)
+);
+//这种形式写 就变成了age和name两个何在一起 不重复就ok了
+insert into user67 values(1,'qqq',1);
+insert into user67 values(1,'qqq',2);
+insert into user67 values(1,'www',1);
+
+select * from user67;
++------+------+------+
+| id   | name | age  |
++------+------+------+
+|    1 | qqq  |    1 |
+|    1 | qqq  |    2 |
+|    1 | www  |    1 |
++------+------+------+
+3 rows in set (0.00 sec)
+
+#删除
+alter table user4 drop index name;
+
+#添加
+alter table user4 modify name varchar(20) unique;
+
+
+
+总结：
+1.建立table就添加约束
+2.可以使用alter 。。。add。。。。
+3.可以使用 alter。。。modif。。。
+4.删除 alter。。。drop。。。。
+
+
+总结一下:
+主键约束(primary key)中包含了唯一约束
+场景:业务需求:设计一张用户注册表,用户姓名必须要用手机号来注册,而且手机号和用户名称都不能为空,那么:
+CREATE TABLE user_test(
+id INT PRIMARY KEY AUTO_INCREMENT comment'主键id',
+name VARCHAR(20) NOT NULL comment'用户姓名,不能为空',
+phone_number VARCHAR(20) UNIQUE NOT NULL comment'用户手机,不能重复且不能为空'
+);
+
+DESCRIBE user_test;
++--------------+-------------+------+-----+---------+----------------+
+| Field        | Type        | Null | Key | Default | Extra          |
++--------------+-------------+------+-----+---------+----------------+
+| id           | int         | NO   | PRI | NULL    | auto_increment |
+| name         | varchar(20) | NO   |     | NULL    |                |
+| phone_number | varchar(20) | NO   | UNI | NULL    |                |
++--------------+-------------+------+-----+---------+----------------+
+3 rows in set (0.00 sec)
+
+这样的话就达到了每一个手机号都只能出现一次,达到了每个手机号只能被注册一次.
+用户姓名可以重复,但是手机号码却不能重复,复合正常的逻辑需求
+
+insert into user_test values(1,'qqq',1234);
+insert into user_test values(NULL,'qqq',23524);
+insert into user_test values(NULL,'qqq',19300);
+insert into 
+
+---非空约束
+
+修饰字段不可为空
+
+create table user9(
+	id int not NULL,
+	age int,
+	name varchar(20)
+);
+
+
+
+---默认约束
+
+
+CREATE TABLE user99(
+id int PRIMARY KEY AUTO_INCREMENT COMMENT'主键id',
+name VARCHAR(20) NOT NULL COMMENT'用户姓名不能为空',
+phone_number VARCHAR(20) NOT NULL COMMENT'用户手机号,不能为空',
+status INT default 0 COMMENT'用户状态0:启用 1:禁封 默认:0'
+);
+DESCRIBE user99;
++--------------+-------------+------+-----+---------+----------------+
+| Field        | Type        | Null | Key | Default | Extra          |
++--------------+-------------+------+-----+---------+----------------+
+| id           | int         | NO   | PRI | NULL    | auto_increment |
+| name         | varchar(20) | NO   |     | NULL    |                |
+| phone_number | varchar(20) | NO   |     | NULL    |                |
+| status       | int         | YES  |     | 0       |                |
++--------------+-------------+------+-----+---------+----------------+
+4 rows in set (0.00 sec)
+
+
+INSERT INTO user99(name,phone_number) VALUES ('aa','123');
+INSERT INTO user99(name,phone_number) VALUES('bb','1234');
+INSERT INTO user99(name,phone_number) VALUES('cc','1263456');
+
+SELECT * FROM user99;
++----+------+--------------+--------+
+| id | name | phone_number | status |
++----+------+--------------+--------+
+|  1 | aa   | 123          |      0 |
+|  2 | bb   | 1234         |      0 |
+|  3 | cc   | 1263456      |      0 |
++----+------+--------------+--------+
+3 rows in set (0.00 sec)
+
+---外键约束
+涉及到2个表 父表 子表
+
+CREATE TABLE classes(
+	-> id INT PRIMARY KEY AUTO_INCREMENT COMMENT'班级表id',
+	-> name VARCHAR(20) COMMENT'班级名称'
+	-> );
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> DESCRIBE classes;
++-------+-------------+------+-----+---------+----------------+
+| Field | Type        | Null | Key | Default | Extra          |
++-------+-------------+------+-----+---------+----------------+
+| id    | int         | NO   | PRI | NULL    | auto_increment |
+| name  | varchar(20) | YES  |     | NULL    |                |
++-------+-------------+------+-----+---------+----------------+
+2 rows in set (0.00 sec)
+
+mysql> CREATE TABLE student(
+	-> id INT PRIMARY KEY AUTO_INCREMENT COMMENT'学生表id',
+	-> name VARCHAR(20) COMMENT'学生姓名',
+	-> class_id int COMMENT'教室id,这张表中的class_id是classes表中id的值',
+	-> FOREIGN KEY (class_id) REFERENCES classes(id)
+	-> );
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> DESCRIBE student;
++----------+-------------+------+-----+---------+----------------+
+| Field    | Type        | Null | Key | Default | Extra          |
++----------+-------------+------+-----+---------+----------------+
+| id       | int         | NO   | PRI | NULL    | auto_increment |
+| name     | varchar(20) | YES  |     | NULL    |                |
+| class_id | int         | YES  | MUL | NULL    |                |
++----------+-------------+------+-----+---------+----------------+
+3 rows in set (0.00 sec)
+
+mysql> 
+FOREIGN :外来 
+REFERENCES:应用,参考
+
+
+INSERT INTO CLASSES (name) VALUES ('一班');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> INSERT INTO CLASSES (name) VALUES ('二班');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> INSERT INTO CLASSES (name) VALUES ('三班');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> INSERT INTO CLASSES (name) VALUES ('四班');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> SELECT * FROM classes;
++----+--------+
+| id | name   |
++----+--------+
+|  1 | 一班   |
+|  2 | 二班   |
+|  3 | 三班   |
+|  4 | 四班   |
++----+--------+
+4 rows in set (0.00 sec)
+
+mysql> INSERT INTO student (name,class_id) VALUES ('小赵',1);
+Query OK, 1 row affected (0.01 sec)
+
+mysql> INSERT INTO student (name,class_id) VALUES ('小钱',2);
+Query OK, 1 row affected (0.00 sec)
+
+mysql> INSERT INTO student (name,class_id) VALUES ('小孙',3);
+Query OK, 1 row affected (0.00 sec)
+
+mysql> INSERT INTO student (name,class_id) VALUES ('小李',4);
+Query OK, 1 row affected (0.00 sec)
+
+mysql> SELECT * FROM student;
++----+--------+----------+
+| id | name   | class_id |
++----+--------+----------+
+|  1 | 小赵   |        1 |
+|  2 | 小钱   |        2 |
+|  3 | 小孙   |        3 |
+|  4 | 小李   |        4 |
++----+--------+----------+
+4 rows in set (0.00 sec)
+
+mysql> 
+
+
+
+1.主表中没有的数据,在附表中,是不可以使用的.
+2.主表中记录的数据现在正在被附表所引用,那么主表中正在被引用的数据不可以被删除
+3.若要想删除,先将附表中的数据删除在删除主表数据
+4.对于外键约束大家可以联想 省,市 来进行联想 (市必须要依赖于省,只要省还有一个市在引用,那么就不可以删除省,要不然市就没有省了. 那么我们想删除省,必须要将该省下所有的市全部删除之后,才可以删除这个省)
+
+
+
+
+
